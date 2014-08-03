@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!--HTML5 doctype-->
+<html>
+
+	<head>
+	
+		<title>
+			XIII. BALANCED BINARY SEARCH TREES (Week 5): 
+			Some Implementation Details
+		</title>
+		
+		<meta 
+		http-equiv="Content-type" 
+		content="text/html; charset=utf-8" />
+		<meta 
+		name="viewport" 
+		content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+
+		<script 
+		type="text/javascript" 
+		charset="utf-8" 
+		src="js/balanced_binary_tree.js"
+		async="async"
+		></script>		
+		
+		<script
+		type="text/javascript" 
+		charset="utf-8" 
+		src="js/druG_N_Drop.js"			
+		async="async"
+		></script>
+		
+		<style>
+			table,th,td
+			{
+				border-collapse: collapse;
+				border: thin solid black;
+				text-align: center;
+			}
+			tr:nth-child(odd)
+			{
+				background: #99CCFF;
+			}
+			tr:nth-child(even)
+			{
+				background: #66FF66;
+			}
+			tfoot tr
+			{
+				background: #CC99FF !important;
+			}
+			#bTreeStrings span::first-letter
+			{ 
+				font-size: 150%;
+				color: #8A2BE2;
+			}
+			.yellow 
+			{
+				color: #FF0066;
+				background: yellow;
+			}
+		</style>
+		<!-- <style>
+			tr:nth-child(even)
+			{
+				background:white;
+			}
+			tfoot 
+			{
+				/*not work that way background:#CC99FF !important;*/
+			}		
+		</style> -->
+
+	</head>
+	
+	<body
+	>
+		<div></div>
+		<table>
+			<caption>Input array</caption>
+			<thead>
+				<tr>
+				 <th 
+				 colspan="10"
+				 ># of elements</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+				  <td
+				  colspan="10"
+				  ></td>
+				</tr>
+			</tfoot>
+			<tbody>
+			  <tr
+			  style='
+			  color:blue;
+			  font-size:smaller;
+			  /*background-color:#66FF66/*rgb(255,0,255)*/;*/
+			  '
+			  >
+				<th>0</th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+				<th>6</th>
+				<th>7</th>
+				<th>8</th>
+				<th>9</th>
+			  </tr>
+			  <tr
+			  style='
+			  color:green;
+			  font-style: italic;
+			  '
+			  >
+				<td>54044
+				</td>
+				<td>14108</td>
+				<td>79294</td>
+				<td>29649</td>
+				<td>25260</td>
+				
+				<td>60660</td>
+				<td>2995</td>
+				<td>53777</td>
+				<td>49689</td>
+				<td>9083</td>
+			  </tr>
+			</tbody>
+		</table>
+		
+		<div
+		id='bTreeStrings'
+		>
+		<h3>Binary tree</h3>
+		
+			<button 
+			type="button"
+			onclick="
+			inlineTreeFromArray(sampleArray,this.parentNode);
+			"
+			>print tree</button>
+			<button 
+			type="button"
+			onclick="
+			clearInlineTree();
+			"
+			>clear/delete tree</button>
+		</div>
+		
+		<canvas 
+		id="myCanvas" 
+		width="8" 
+		height="5" 
+		style="
+		border:1px solid #66FF33;
+		"
+		><!-- //tag is used to draw graphics, on the fly, via scripting (usually JavaScript) -->
+			Your browser does not support the HTML5 canvas tag.
+		</canvas><!-- //a container for graphics -->
+		
+		<button 
+		type="button"
+		onclick="
+		treeFromArray(sampleArray);	
+		"
+		disabled=true
+		>draw tree</button>
+		
+		<script>
+		</script>
+		
+		<p 
+		id='powerOf2'
+		></p>
+
+		<table
+		id='binaryTree'
+		>
+			<caption>Binary tree (not balanced) representation </caption>
+			<thead>
+				<!-- validator.w3.org trow error on id='trLevel0' usage in 'tr' within 'thead' -->
+				<tr
+				class='draggable'
+				name='rootNode'
+				id='trLevel0'
+				>
+				 <th 
+				 
+				 >level 0 (rootNode):</th>
+				 <td 
+				 colspan="8"
+				 draggable="true"
+				 ondragstart="drag(event)"
+				 ondrop="drop(event)" 
+				 ondragover="allowDrop(event)"
+				 >54044</td>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+				  <td
+				  colspan="9"
+				  ></td>
+				</tr>
+			</tfoot>
+			<tbody>
+			  <tr
+			  class='draggable'
+			  id='trLevel1'
+			  style='
+			  color:blue;
+			  font-size:smaller;
+			  '
+			  >
+				<th>level 1:</th>
+				<td
+				colspan="4"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" 
+				ondragover="allowDrop(event)"
+				>14108
+				</td>
+				<td
+				colspan="4"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>79294</td>
+			  </tr>
+			  <tr
+			  class='draggable'
+			  id='trLevel2'
+			  style='
+			  '
+			  >
+				<th>level 2:</th>
+				<td
+				colspan="2"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>29649
+				</td>
+				<td
+				colspan="2"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>25260</td>
+				<td
+				colspan="2"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>60660
+				</td>
+				<td
+				colspan="2"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>2995</td>
+			  </tr>
+			  <tr
+			  class='draggable'
+			  id='trLevel3'
+			  style='
+			  '
+			  >
+				<th>level 3:</th>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;53777
+				</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;49689</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;9083
+				</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;
+				</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;
+				</td>
+				<td
+				colspan="1"
+				draggable="true"
+				ondragstart="drag(event)"
+				ondrop="drop(event)" ondragover="allowDrop(event)"
+				>&nbsp;</td>
+			  </tr>
+			</tbody>
+		</table>
+		
+		<table
+		id='outputHeapArray'
+		>
+			<caption>Output heap array</caption>
+			<thead>
+				<tr>
+				 <th 
+				 colspan="10"
+				 ># of elements</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+				  <td
+				  colspan="10"
+				  ></td>
+				</tr>
+			</tfoot>
+			<tbody>
+			  <tr
+			  style='
+			  color:blue;
+			  font-size:smaller;
+			  '
+			  >
+				<th>0</th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+				<th>6</th>
+				<th>7</th>
+				<th>8</th>
+				<th>9</th>
+			  </tr>
+			  <tr
+			  style='
+			  color:red;
+			  font-style: italic;
+			  '
+			  >
+				<td>&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			  </tr>
+			</tbody>
+		</table>
+		
+		<button 
+		type="button"
+		onclick=""
+		>fill heap from input array</button>
+		
+		<button 
+		type="button"
+		onclick="
+		/*clearTreeTable();*/		
+		"
+		>fill tree from heap</button>
+		
+		<button 
+		type="button"
+		onclick="
+		this.innerHTML='extracted min key is:';
+		"
+		>extract min</button>
+
+		<script 
+		type="text/javascript" 
+		charset="utf-8" 
+		src="draw_canvas_tree.js"
+		async="async"
+		></script><!-- load when HTML DOM ready -->		
+
+		<!--script>
+			'use strict';
+			var myInnerHTML='value of 2 to the power of 0 is:' +
+			Math.pow(2, 0)+' maximum # of elements on level 0<br />'+
+			'value of 2 to the power of 1 is:' +Math.pow(2, 1)+' maximum # of elements on level 1<br />'+
+			'value of 2 to the power of 2 is:' +Math.pow(2, 2)+' maximum # of elements on level 2<br />'+
+			'value of 2 to the power of 3 is:' +Math.pow(2, 3)+' maximum # of elements on level 3<br />';
+			document.getElementById("powerOf2").innerHTML = myInnerHTML;
+		</script-->
+		
+	</body>
+</html>
