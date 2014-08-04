@@ -22,31 +22,139 @@
 
 /**
 * supported operations: (augmentation of data structure)
-*	1. insert - preserve search tree property -- all left keys less then parent node (x), all right keys greater then (x)
-*	2. deletion (3 different case)
+*	1. insert - 
+*			preserve search tree property -- 
+*				all left keys less then parent node (x), 
+*				all right keys greater then (x)
+*	2. deletion (3 different case) -
+*		2.1			
+*		2.2
+*		2.3	
 * 3. min
 * 4. max
 * 5. predecessor: next biggest or smallest element of the tree ('left turn')
 * 6. successor
 * 7. outPut in sorted order -- print keys in increasing order (in-order traversal)
-* 8. rank (size of node self included=left subtree+right subtree + itself) - updates on insert/delete
+* 8. rank (size of node self included=left subtree+right subtree + itself) - 
+*			updates on insert/delete
 * 9. select -- i-th order statistic
 * 10. search (and insertion) - for specific key (k) in tree (T)
 */
 
+/* define some public functions 
+that can 
+access private functions and variables, 
+using/via 
+closures 
+which is also known as 
+the module pattern */
 //constructor
 var balancedBinaryTree= (function() 
 {
-  var privateCounter = 0;
-  function changeBy(val) {
+  var treeContent = {nodes:[]};//or [] of {} ?
+
+  /* function changeBy(val) {
     //privateCounter += val;
-  }
+  } */
+	
+	/* function getParent() {
+		return ;//index
+	} */
 	
   return {
-    insertNode: function() {
-      //changeBy(1);
+		nodeParent: function() {
+      return nodeParent;
     },
-    deleteNode: function() {
+		nodeLeftChild: function() {
+      return nodeLeftChild;
+    },
+		nodeRightChild: function() {
+      return nodeRightChild;
+    },
+		treeHeight: function() {
+      return treeHeight;
+    },
+    insertNode: function(newNode) {
+			
+			var parentNode;//name conflict ?
+			
+      if (typeof(treeContent.nodes[0])==='undefined'){
+				//first/root node 
+								
+				//increment
+				treeContent.nodes[treeContent.nodes.length]={
+					keyValue: newNode,
+					nodeParent: null,
+					nodeLeftChild: null,
+					nodeRightChild: null,
+					rank: 1
+				};//where newNode is a key value
+			
+				//console.log('treeContent.nodes.length:'+treeContent.nodes.length);
+			}
+			else
+			{
+				//must preserve search tree property -- 
+					/* *				all left keys less then parent node (x), 
+					*				all right keys greater then (x) */
+
+				parentNode=treeContent.nodes[treeContent.nodes.length-1];//last index in array
+				
+				parentNode.rank=parentNode.rank+1;
+				
+				//increment
+				treeContent.nodes[treeContent.nodes.length]={
+					keyValue: newNode,
+					nodeParent: parentNode,
+					nodeLeftChild: null,
+					nodeRightChild: null,
+					rank: 1
+				};//where newNode is a key value
+				//array length changed so/and (in that time) we add a new node
+				//to array element with new index=.length (last was =.length-1)
+				
+				//treeContent.nodes[treeContent.nodes.length].nodeParent=parentNode;
+					
+				//must determine to what leaf (left/right) add new node
+				if (parentNode.keyValue<=newNode) {
+					//left leaf
+					parentNode.nodeLeftChild=treeContent.nodes.length-1;//last index
+				}//where newNode is a key value
+				else {
+					//right leaf
+					parentNode.nodeRightChild=treeContent.nodes.length-1;//last index
+				}
+
+			}
+			
+			console.log('treeContent.nodes.length:'+treeContent.nodes.length);
+    },
+    outPut: function() {
+			//print keys in in/decreasing order (in-order traversal)
+			
+			var keys='';//or []
+			var i=0;//for increment counter
+			
+			if (typeof(treeContent.nodes[0])!=='undefined') {
+			
+				for (i=0;i<treeContent.nodes.length;i=i+1){
+					if (i==0) {
+						//keys='';
+					}
+					else{
+						keys=keys+',';
+					}
+					keys=keys+treeContent.nodes[i].keyValue;
+				}
+				
+			}
+			else{
+				keys='empty -- no one key found';
+			}
+			
+      return keys;
+    },
+    deleteNode: function(removedNode) {
       //changeBy(-1);
     },
     min: function() {
@@ -55,26 +163,51 @@ var balancedBinaryTree= (function()
     max: function() {
       return max;
     },
-    predecessor: function() {
+    predecessor: function(currentNode) {
       return predecessor;
     },
-    successor: function() {
+    successor: function(currentNode) {
       return successor;
     },
-    rank: function() {
+    treeRank: function() {
+			if (typeof(treeContent.nodes[0])!=='undefined') {
+				return treeContent.nodes[0].rank;
+			}
+			else {
+				return 0;
+			}
+    },
+    rank: function(currentNode) {
       return rank;
     },
     select: function() {
       return select;
+    },
+    search: function(keyValue) {
+      return select;
     }
   };   
-}); 
+})(); 
+/*----------------------------------------------------------------------------------------------------------*/
+balancedBinaryTree.insertNode(1);
+balancedBinaryTree.insertNode(3);
+console.log('treeContent:'+balancedBinaryTree.outPut());//out of scope
+console.log('treeRank:'+balancedBinaryTree.treeRank());
 /*----------------------------------------------------------------------------------------------------------*/
 
 function inlineTreeFromArray(treeArray,domNode){
 
 	if (typeof(treeArray)=='undefined'){
+	
 		console.log(treeArray);
+		
+		return ;
+	}
+	
+	if (typeof(domNode)==='undefined'){
+	
+		console.log('not defoned domNode for output');
+		
 		return ;
 	}
 	
@@ -224,6 +357,7 @@ function inlineTreeFromArray(treeArray,domNode){
 var sampleArray=[54044,14108,79294,29649,25260,60660,2995,53777,49689,9083];
 //id='bTreeStrings'
 var domNode=document.getElementById('bTreeStrings');
+console.log('domNode is: '+domNode);
 //inlineTreeFromArray(sampleArray,domNode);
 
 /*----------------------------------------------------------------------------------------------------------*/
@@ -238,14 +372,32 @@ create a callback function.
 A callback function 
 is executed after the current effect is finished. */
 
-function clearInlineTree(callBackFunction){
+//function clearInlineTree(callBackFunction){
+//function clearInlineTree(domNode){
+	//if needed to determine exact element to clear -- pass it to function as parameter
+function clearInlineTree(){
+	
 	var tagsP_forRemoval;
 	var i;
 	//document.normalize();//Removes empty Text nodes, and joins adjacent nodes
 	//element.normalize();
-	domNode.normalize();
-	//console.log('domNode.childNodes.length was:'+domNode.childNodes.length);
+	//domNode.normalize();
 	
+	//console.log('domNode.childNodes.length was:'+domNode.childNodes.length);
+	if (typeof(domNode)==='undefined') {
+		console.log('no target element for clear, domNode is -- undefined');
+		
+		return ;
+	}
+	
+	if (domNode===null) {
+		console.log('no target element for clear, domNode is -- null');
+		
+		return ;
+	}
+	
+	//in Opera: Uncaught exception: TypeError: Cannot convert 'domNode' to object
+	//reason/because -- DOM not loaded yet -- body tag is empty
 	tagsP_forRemoval=domNode.getElementsByTagName("P");//returns a collection of all elements in the document with the specified tagname, as a NodeList object.
 	//The NodeList object represents a collection of nodes. 
 	//The nodes can be accessed by index numbers. 
@@ -286,6 +438,7 @@ function clearInlineTree(callBackFunction){
 	console.log('tagsP_forRemoval.length is/became:'+tagsP_forRemoval.length);
 	
 	//callBackFunction;
-	return callBackFunction;
+	//return callBackFunction;
+	return ;
 }
 
