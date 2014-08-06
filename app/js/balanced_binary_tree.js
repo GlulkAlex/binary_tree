@@ -2,6 +2,17 @@
 //balanced_binary_tree
 'use strict';
 
+/* A binary tree 
+can be seen as 
+a type of linked list 
+where the elements are themselves linked lists of the same nature. 
+The result is that 
+each node may include a reference 
+to the first node of one or two other linked lists, 
+which, 
+together with their contents, 
+form the subtrees below that node. */
+
 /**
 * properties:
 * height - longest path
@@ -26,6 +37,9 @@
 *			preserve search tree property -- 
 *				all left keys less then parent node (x), 
 *				all right keys greater then (x)
+*		1.1 search for k (new/added node key value)
+*				1.1.1 if find match/duplicate -- write as left child and rewrite adjusted/affected links/pointers
+*		1.2 rewrite final 'null' pointer to point to new node with key 'k' 
 *	2. deletion (3 different case) -
 *		2.1			
 *		2.2
@@ -35,10 +49,20 @@
 * 5. predecessor: next biggest or smallest element of the tree ('left turn')
 * 6. successor
 * 7. outPut in sorted order -- print keys in increasing order (in-order traversal)
+*		7.1 let R=root of search tree
+*				with subTree T(left) and T(right)
+*			7.2.1 recurse on T(left)
+*						by recursing/induction prints out keys of T(left) in increasing order
+*			7.3.2 print out R-s key		
+*			7.2.3 recurse on T(right)
+*						by recursing/induction prints out keys of T(right) in increasing order
 * 8. rank (size of node self included=left subtree+right subtree + itself) - 
 *			updates on insert/delete
 * 9. select -- i-th order statistic
 * 10. search (and insertion) - for specific key (k) in tree (T)
+* 		10.1 start at the root
+* 		10.2 traverse/goto left/right pointers as needed (if key >/< at current node)
+* 		10.3 return: node with key==k or null if not found
 */
 
 /* define some public functions 
@@ -49,9 +73,11 @@ closures
 which is also known as 
 the module pattern */
 //constructor
-var balancedBinaryTree= (function() 
-{
-  var treeContent = {nodes:[]};//or [] of {} ?
+var balancedBinaryTree= (function () {
+
+  var treeContent = {
+		nodes:[]
+	};//or [] of {} ?
 
   /* function changeBy(val) {
     //privateCounter += val;
@@ -74,11 +100,46 @@ var balancedBinaryTree= (function()
 		treeHeight: function() {
       return treeHeight;
     },
-    insertNode: function(newNode) {
+    insertNode: function (newNode) {
 			
+			var parenNodeIndex;//may accidentally be changed inside some function 
 			var parentNode;//name conflict ?
+			var currentNodeIndex=0;//for root/start
 			
+			var rankIncrementCounter=0;
+			
+			function rankIncrement(nodeIndex){
+				
+				var rankedNode;//name conflict ? Scope ?
+				
+				//must not exceed array length
+				if (rankIncrementCounter>100){
+				
+					console.log('Iteration count for rank increment exceed 100');
+				}
+			
+				rankedNode=treeContent.nodes[nodeIndex];
+				/* parentNode.rank=parentNode.rank+1; */
+				
+				if (nodeIndex==0){
+					//last step -- root (climbed to topmost node)
+					rankedNode.rank=rankedNode.rank+1;
+				}
+				else if (nodeIndex>0){
+				
+					rankedNode.rank=rankedNode.rank+1;
+					nodeIndex=rankedNode.nodeParent;
+					
+					//recursion
+					//careful because may never end
+					rankIncrement(nodeIndex);
+					
+				}
+			}
+			
+			//check for first node existence/presence 
       if (typeof(treeContent.nodes[0])==='undefined'){
+				//simple case
 				//first/root node 
 								
 				//increment
@@ -90,6 +151,12 @@ var balancedBinaryTree= (function()
 					rank: 1
 				};//where newNode is a key value
 			
+				//currentNodeIndex=currentNodeIndex+1==0;
+				/* console.log(
+				'Root node. Key '+newNode+' added as root ('+newNode+')['+currentNodeIndex+'] node. '+
+				'Tree rank is: '+
+				treeContent.nodes[currentNodeIndex].rank
+				); */
 				//console.log('treeContent.nodes.length:'+treeContent.nodes.length);
 			}
 			else
@@ -97,59 +164,290 @@ var balancedBinaryTree= (function()
 				//must preserve search tree property -- 
 					/* *				all left keys less then parent node (x), 
 					*				all right keys greater then (x) */
-
-				parentNode=treeContent.nodes[treeContent.nodes.length-1];//last index in array
+				//search tree for place to new node/key
+				var keyFound=false;
+				var placePointerFound=false;
 				
-				parentNode.rank=parentNode.rank+1;
+				var lastNullPointer=-1;//to left/right child/leaf //-1==no such index in array 
 				
-				//increment
-				treeContent.nodes[treeContent.nodes.length]={
-					keyValue: newNode,
-					nodeParent: parentNode,
-					nodeLeftChild: null,
-					nodeRightChild: null,
-					rank: 1
-				};//where newNode is a key value
-				//array length changed so/and (in that time) we add a new node
-				//to array element with new index=.length (last was =.length-1)
+				//simple case no duplicate key values -- all unique
+				var previousTreeRank=treeContent.nodes[0].rank;
 				
-				//treeContent.nodes[treeContent.nodes.length].nodeParent=parentNode;
+				var whileCounter=0;
+				//while (lastNullPointer===-1) {
+				while (previousTreeRank==treeContent.nodes[0].rank) {
+				
+					parenNodeIndex=currentNodeIndex;
+					parentNode=treeContent.nodes[currentNodeIndex];//last index in array					
+										
+					//treeContent.nodes[treeContent.nodes.length].nodeParent=parentNode;
+						
+					//must determine to what leaf (left/right) add new node
+					if (parentNode.keyValue>=newNode) {
+						//newNode less or equal then 'k'
+						//left leaf
+						
+						if (parentNode.nodeLeftChild==null) {
+							//found place for/to put/add new node 
+							
+							keyFound=false;
+							placePointerFound=true;
+							lastNullPointer=null;
+							
+							//currentNodeIndex=currentNodeIndex+1;//==treeContent.nodes.length
+							
+							//increment
+							treeContent.nodes[treeContent.nodes.length]={
+								keyValue: newNode,
+								nodeParent: parenNodeIndex,
+								nodeLeftChild: null,
+								nodeRightChild: null,
+								rank: 1
+							};//where newNode is a key value
+							//array length changed so/and (in that time) we add a new node
+							//to array element with new index=.length (last was =.length-1)
+							
+							//changed for each upper node in chain
+							//parentNode.rank=parentNode.rank+1;//after new nod added in right place
+							rankIncrement(parenNodeIndex);							
+							
+							//currentNodeIndex==treeContent.nodes.length-1
+							parentNode.nodeLeftChild=treeContent.nodes.length-1;//last/new available index
+							
+							/* console.log(
+								'Left node '+newNode+
+								' added as left child/leaf to ('+parentNode.keyValue+')['+parenNodeIndex+'] parent node. '+
+								'Tree rank is: '+
+								treeContent.nodes[0].rank
+							); */
+							
+							break;//node added so exit 'while' loop
+						
+						}
+						else {
+							//search for next place to add new node
+							currentNodeIndex=parentNode.nodeLeftChild;
+							//parenNodeIndex=currentNodeIndex;
+							
+							//continue ;
+						}
+						
+					}//where newNode is a key value
+					else if (parentNode.keyValue<newNode){
+						//newNode greater then 'k'
 					
-				//must determine to what leaf (left/right) add new node
-				if (parentNode.keyValue<=newNode) {
-					//left leaf
-					parentNode.nodeLeftChild=treeContent.nodes.length-1;//last index
-				}//where newNode is a key value
-				else {
-					//right leaf
-					parentNode.nodeRightChild=treeContent.nodes.length-1;//last index
-				}
+						//right leaf
+						
+						if (parentNode.nodeRightChild==null) {
+							//found place for/to put/add new node
+							
+							keyFound=false;
+							placePointerFound=true;
+							
+							lastNullPointer=null;
+							
+							//currentNodeIndex=currentNodeIndex+1;//==treeContent.nodes.length
+							
+							//increment
+							treeContent.nodes[treeContent.nodes.length]={
+								keyValue: newNode,
+								nodeParent: parenNodeIndex,
+								nodeLeftChild: null,
+								nodeRightChild: null,
+								rank: 1
+							};//where newNode is a key value
+							//array length changed so/and (in that time) we add a new node
+							//to array element with new index=.length (last was =.length-1)
 
+							//parentNode.rank=parentNode.rank+1;//after new nod added in right place
+							rankIncrement(parenNodeIndex);
+							
+							//currentNodeIndex==treeContent.nodes.length-1
+							parentNode.nodeRightChild=treeContent.nodes.length-1;//last/new available index
+							
+							/* console.log(
+								'Right node '+newNode+
+								' added as right child/leaf to ('+parentNode.keyValue+')['+parenNodeIndex+'] parent node. '+
+								'Tree rank is: '+
+								treeContent.nodes[0].rank
+							); */
+							
+							break;//node added so exit 'while' loop
+						
+						}
+						else { //if (parentNode.nodeRightChild!==null) {
+							//search for next place to add new node
+							currentNodeIndex=parentNode.nodeRightChild;
+							//parenNodeIndex=currentNodeIndex;
+							
+							//continue ;
+						}
+						
+					}
+					
+					whileCounter=whileCounter+1;
+					if (whileCounter==100){
+						break;
+					}
+				}
+				
 			}
 			
-			console.log('treeContent.nodes.length:'+treeContent.nodes.length);
+			//console.log('treeContent.nodes.length:'+treeContent.nodes.length);
     },
-    outPut: function() {
+    outPutAscending: function() {
 			//print keys in in/decreasing order (in-order traversal)
+			
+			//for Ascending Order. Arranged from smallest to largest
 			
 			var keys='';//or []
 			var i=0;//for increment counter
+			var currentNodeIndex=0;
+			
+			var rootIdex=-1;
+			var leftSubTree=-1;//what about rank ?
+			var rightSubTree=-1;//what about rank ?		
+			
+			var flagAllLeftDone=false;
+			var flagAllRootDone=false;
+			var flagAllRightDone=false;
+			
+			var printSubTreeCounter=0;
+			var searchStatus={
+				leftSideDone: false,
+				rootPrinted: false,
+				rightSideDone: false
+			};//'startAtRoot';
+			
+			//for recursive traversal
+			//subTree not a array its an Object element of Array
+			//or pass 'currentNodeIndex' as parameter pointer to element in array
+			//function printSubTree(subTree) {
+			function printSubTree(nodeIndex) {
+				//:first go to left until
+				//(when) no left side present, then:
+				//print current root node key, then:
+				//check right side 
+				//if present -- (goto :first)
+				//else return to previous position, where last :first started
+			
+				printSubTreeCounter=printSubTreeCounter+1;
+				if (printSubTreeCounter>100) {
+				
+					console.log('itreation count exceed 100');
+					return;//accidentally malfunction - unexpected/unpredicted
+				}
+				
+				if (treeContent.nodes[nodeIndex].nodeLeftChild==null) {
+					//last left node found
+					//print current (as root)
+					//check right child/leaf
+					
+					//searchStatus='leftSideDone';
+					//searchStatus='rootDone';
+					searchStatus.leftSideDone=true;
+					
+					keys=keys+'node['+i+'] key='+treeContent.nodes[nodeIndex].keyValue+';';
+					
+					searchStatus.rootPrinted=true;
+					console.log(
+						'No left child for ('+treeContent.nodes[nodeIndex].keyValue+')['+nodeIndex+']'+
+						' Iteration #:'+printSubTreeCounter
+					);
+					console.log('Continue search. SubTree root keys is: '+keys);
+					
+					if (treeContent.nodes[nodeIndex].nodeRightChild==null) {
+						
+						console.log(
+							'No right child for ('+treeContent.nodes[nodeIndex].keyValue+
+							')['+currentNodeIndex+']'+
+							' Iteration #:'+printSubTreeCounter
+						);
+						
+						//rightSideDone=true;
+						//searchStatus='rightSideDone';
+						searchStatus.rightSideDone=true;
+						
+						//return searchStatus;//on previous recursion/iteration level;	
+					}
+					else {//if (treeContent.nodes[nodeIndex].nodeRightChild!==null) {
+					
+						nodeIndex=treeContent.nodes[nodeIndex].nodeRightChild;
+						console.log(
+							'Going right to the ('+treeContent.nodes[nodeIndex].keyValue+
+							')['+nodeIndex+']'
+						);
+
+						printSubTree(nodeIndex);
+					}
+					//return ;	
+					
+				}
+				else {//if (treeContent.nodes[nodeIndex].nodeLeftChild!==null) {
+				
+					nodeIndex=treeContent.nodes[nodeIndex].nodeLeftChild;
+					console.log(
+						'Going left to the ('+treeContent.nodes[nodeIndex].keyValue+
+						')['+nodeIndex+']'+
+						' Iteration #:'+printSubTreeCounter
+					);
+					
+					//recursion.
+					//may stuck	on never ending endless loop				
+					printSubTree(nodeIndex);
+				}
+			}
 			
 			if (typeof(treeContent.nodes[0])!=='undefined') {
 			
-				for (i=0;i<treeContent.nodes.length;i=i+1){
-					if (i==0) {
+				printSubTree(currentNodeIndex);
+				//console.log('continue search. keys is: '+keys);
+				
+				//treeContent.nodes.length-1 iteration ?
+				i=treeContent.nodes.length;
+				for (;i<treeContent.nodes.length;){
+					//1) go to leftmost element
+						//1.1 while left child pointer !==null, assign current nod as new 'root' (for current subtree)
+					//2) when left child pointer ==null print current node key (as root)
+						//2.2 if left child pointer !==null, then that nod assigned as current 'root' 
+					//3) then go to right leaf/child of current 'root'
+						//3.1 if right child pointer ==null print current node key (as root)
+						//3.2 return on previous/upper level of recursion 
+					//4) if it has a left child, then that nod assigned as current 'root'  
+					//5) return on previous/upper level of recursion 
+					
+					if (treeContent.nodes[currentNodeIndex].nodeLeftChild==null) {
+						//last left node print out and -- go to 'root'
+					
+						
+					
+					}
+					else if (treeContent.nodes[currentNodeIndex].nodeLeftChild!==null) {
+						//go down to left
+						currentNodeIndex=treeContent.nodes[currentNodeIndex].nodeLeftChild;
+						
+						/*The continue statement 
+						breaks one iteration (in the loop), 
+						if a specified condition occurs, 
+						and continues with the next iteration in the loop.*/
+						continue; //check for never ending loop/endless
+					}
+					
+					if (currentNodeIndex==0) {
 						//keys='';
 					}
-					else{
-						keys=keys+',';
+					else {
+						/* keys=keys+','; */
 					}
-					keys=keys+treeContent.nodes[i].keyValue;
+					
+					/* keys=keys+'node['+i+'] key='+treeContent.nodes[currentNodeIndex].keyValue; */
+					
+					i=i+1;
 				}
 				
 			}
 			else{
-				keys='empty -- no one key found';
+				keys='empty -- no one node with key found';
 			}
 			
       return keys;
@@ -178,21 +476,145 @@ var balancedBinaryTree= (function()
 			}
     },
     rank: function(currentNode) {
+			//changed for each upper node in chain
+			//when child node added
+			
       return rank;
     },
     select: function() {
       return select;
     },
     search: function(keyValue) {
-      return select;
+		
+			var flagKeyFound=false;
+			var flagEndOfTree=false;//or .rank==1
+			
+			var flagKeyNotFound=true;
+			var flagNotEndOfTree=true;//or .rank>1
+			
+			var currentNodeIndex;
+			
+			//has any node
+			if (typeof(treeContent.nodes[0])!=='undefined') {
+			
+				currentNodeIndex=0;//root
+				
+				var whileCounter=0;
+				while (
+					flagKeyNotFound && 
+					flagNotEndOfTree && 
+					whileCounter<100
+				){
+				
+					if (keyValue==treeContent.nodes[currentNodeIndex].keyValue){
+						//found
+						flagKeyNotFound=false;
+						flagKeyFound=true;
+					}
+					else if (keyValue<treeContent.nodes[currentNodeIndex].keyValue){
+						//left leaf/child
+						if (treeContent.nodes[currentNodeIndex].nodeLeftChild==null){
+						
+							console.log(
+								'left leaf/child of ('+
+								treeContent.nodes[currentNodeIndex].keyValue+
+								')['+currentNodeIndex+']'+
+								' is null -- end of tree. Nowhere else to search for '+
+								keyValue+'.'
+							);
+							flagNotEndOfTree=false;//end of tree
+							flagEndOfTree=true;
+						}
+						else {
+							//continue search
+							currentNodeIndex=treeContent.nodes[currentNodeIndex].nodeLeftChild;
+						}
+					}
+					else if (keyValue>treeContent.nodes[currentNodeIndex].keyValue){
+						//right leaf/child
+						if (treeContent.nodes[currentNodeIndex].nodeRightChild==null){
+						
+							console.log(
+								'right leaf/child of ('+
+								treeContent.nodes[currentNodeIndex].keyValue+
+								')['+currentNodeIndex+']'+
+								' is null -- end of tree. Nowhere else to search for '+
+								keyValue+'.'
+							);
+							flagNotEndOfTree=false;//end of tree
+							flagEndOfTree=true;
+							
+						}
+						else {
+							//continue search
+							currentNodeIndex=treeContent.nodes[currentNodeIndex].nodeRightChild;
+						}
+					}
+					
+					whileCounter=whileCounter+1;//for/to break never ending loop
+					if (whileCounter==100) {
+						break;//for/to break never ending loop
+					}
+					
+				}
+				
+				if (flagKeyNotFound==false) {
+				//if (flagKeyFound) {
+					console.log(
+						'search result for key '+
+						keyValue+
+						' is: found in node ('+
+						treeContent.nodes[currentNodeIndex].keyValue+
+						') with index [ '+
+						currentNodeIndex+']'
+					);
+					
+					return treeContent.nodes[currentNodeIndex].keyValue;
+				}
+				else if (flagNotEndOfTree){
+				
+					console.log('search result for key '+keyValue+' is: '+null+' not found');
+					return null;
+				}
+				
+			}
+			else {
+			
+				console.log('search result for key '+keyValue+' is: tree empty. No place for search.');
+				return null;
+			}
+			
     }
   };   
 })(); 
 /*----------------------------------------------------------------------------------------------------------*/
+
+//balancedBinaryTree
+/*----------------------------------------------------------------------------------------------------------*/
+/* balancedBinaryTree.insertNode(7);
+balancedBinaryTree.insertNode(5);
+balancedBinaryTree.insertNode(11);
 balancedBinaryTree.insertNode(1);
-balancedBinaryTree.insertNode(3);
-console.log('treeContent:'+balancedBinaryTree.outPut());//out of scope
-console.log('treeRank:'+balancedBinaryTree.treeRank());
+balancedBinaryTree.insertNode(3); */
+
+var sampleArray=[54044,14108,79294,29649,25260,60660,2995,53777,49689,9083];
+var i;//check for double/repeated declaration  
+
+for (i=0;sampleArray.length>i;i=i+1){
+	balancedBinaryTree.insertNode(sampleArray[i]);
+}
+
+console.log('treeContent in Ascending order:'+balancedBinaryTree.outPutAscending());//out of scope
+
+console.log('treeRank or root node rank is:'+balancedBinaryTree.treeRank());
+
+var findKey;
+findKey=3;
+console.log('find key '+findKey+' in tree result: '+balancedBinaryTree.search(3));
+findKey=4;
+console.log('find key '+findKey+' in tree result: '+balancedBinaryTree.search(4));
+findKey=0;
+console.log('find key '+findKey+' in tree result: '+balancedBinaryTree.search(0));
 /*----------------------------------------------------------------------------------------------------------*/
 
 function inlineTreeFromArray(treeArray,domNode){
@@ -354,10 +776,9 @@ function inlineTreeFromArray(treeArray,domNode){
 }
 /*----------------------------------------------------------------------------------------------------------*/
 
-var sampleArray=[54044,14108,79294,29649,25260,60660,2995,53777,49689,9083];
 //id='bTreeStrings'
 var domNode=document.getElementById('bTreeStrings');
-console.log('domNode is: '+domNode);
+/* console.log('domNode is: '+domNode); */
 //inlineTreeFromArray(sampleArray,domNode);
 
 /*----------------------------------------------------------------------------------------------------------*/

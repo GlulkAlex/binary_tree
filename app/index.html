@@ -43,6 +43,12 @@
 			{
 				background: #CC99FF !important;
 			}
+			td {
+				min-width: 30px;
+			}
+			#binaryTree td,#outputHeapArray td {
+				min-width: 50px;
+			}
 			#bTreeStrings span::first-letter
 			{ 
 				font-size: 150%;
@@ -187,18 +193,19 @@
 				 
 				 >level 0 (rootNode):</th>
 				 <td 
-				 colspan="8"
+				 colspan="16"
 				 draggable="true"
 				 ondragstart="drag(event)"
 				 ondrop="drop(event)" 
 				 ondragover="allowDrop(event)"
-				 >54044</td>
+				 >54044
+				 </td>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 				  <td
-				  colspan="9"
+				  colspan="17"
 				  ></td>
 				</tr>
 			</tfoot>
@@ -211,55 +218,58 @@
 			  font-size:smaller;
 			  '
 			  >
-				<th>level 1:</th>
-				<td
-				colspan="4"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" 
-				ondragover="allowDrop(event)"
-				>14108
-				</td>
-				<td
-				colspan="4"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>79294</td>
-			  </tr>
-			  <tr
-			  class='draggable'
-			  id='trLevel2'
-			  style='
-			  '
-			  >
-				<th>level 2:</th>
-				<td
-				colspan="2"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>29649
-				</td>
-				<td
-				colspan="2"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>25260</td>
-				<td
-				colspan="2"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>60660
-				</td>
-				<td
-				colspan="2"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>2995</td>
+					<th>level 1:</th>
+					<td
+					colspan="8"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" 
+					ondragover="allowDrop(event)"
+					>14108
+					</td>
+					<td
+					colspan="8"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>79294
+					</td>
+				</tr>
+				<tr
+				class='draggable'
+				id='trLevel2'
+				style='
+				'
+				>
+					<th>level 2:</th>
+					<td
+					colspan="4"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>29649
+					</td>
+					<td
+					colspan="4"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>25260
+					</td>
+					<td
+					colspan="4"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>60660
+					</td>
+					<td
+					colspan="4"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>2995
+					</td>
 			  </tr>
 			  <tr
 			  class='draggable'
@@ -267,59 +277,173 @@
 			  style='
 			  '
 			  >
-				<th>level 3:</th>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;53777
-				</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;49689</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;9083
-				</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;
-				</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;
-				</td>
-				<td
-				colspan="1"
-				draggable="true"
-				ondragstart="drag(event)"
-				ondrop="drop(event)" ondragover="allowDrop(event)"
-				>&nbsp;</td>
+					<th>level 3:</th>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>53777
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>49689
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>9083
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="2"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+			  </tr>
+					<th>level 4:</th>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					></td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					></td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					></td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					>
+					</td>
+					<td
+					colspan="1"
+					draggable="true"
+					ondragstart="drag(event)"
+					ondrop="drop(event)" ondragover="allowDrop(event)"
+					></td>
 			  </tr>
 			</tbody>
 		</table>
