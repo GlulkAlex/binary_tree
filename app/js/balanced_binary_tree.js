@@ -309,53 +309,19 @@ var balancedBinaryTree= (function () {
 					if (whileCounter==100){
 						break;
 					}
-				}
-				
-			}
-			
+				}//while /* end */ (previousTreeRank==treeContent.nodes[0].rank)				
+			}//else /* end */			
 			//console.log('treeContent.nodes.length:'+treeContent.nodes.length);
-    },
-		//insertNode: /* end */
+    },//insertNode: /* end */
     outPutAscending: function() {
-			//print keys in in/decreasing order (in-order traversal)
-			
+			//print keys in in/decreasing order (in-order traversal)			
 			//for Ascending Order. Arranged from smallest to largest
 			
 			var keys='';//return value //or [] //must be in scope for underlying functions
 			
-			var i=0;//for increment counter
-			var currentNodeIndex=0;//initial value as 'root'
-			var currentRootNodeIndex=0;//for come back in right search
-			
-			var rootIdex=-1;
-			var leftSubTree=-1;//what about rank ?
-			var rightSubTree=-1;//what about rank ?		
-			
-			var flagAllLeftDone=false;
-			var flagAllRootDone=false;
-			var flagAllRightDone=false;
-			
 			var printSubTreeCounter=0;
 			var iterationCounter=0;
-			
-			var searchStatus={
-				treeNodeIndex: 0,
-				leftSideDone: false,
-				rootPrinted: false,
-				rightSideDone: false
-			};//'startAtRoot';
-			
-			//subtree was searched and printed
-			var subTreeStatus={
-				leftNodeIndex: '?',
-				rightNodeIndex: '?'
-			};
-			
-			/* 
-			subTreeStatus.leftNodeIndex='?';
-			subTreeStatus.rightNodeIndex='?'; 
-			*/
-			
+						
 			//for recursive traversal
 			//subTree not an array it is an Object element of Array
 			//or pass 'currentNodeIndex' as parameter pointer to element in array
@@ -363,29 +329,28 @@ var balancedBinaryTree= (function () {
 				iterationCounter=iterationCounter+1;//by fact of invoking 
 				//return false;
 			}
-			
-			function printRoot(nodeIndex) {
-				if (nodeIndex==undefined) {
-					console.log(
-						'treeContent.nodes[nodeIndex] is '+
-						treeContent.nodes[nodeIndex]
+						
+			function checkRight(nodeIndex) {
+				//iterationCounter=iterationCounter+1;//by fact of invoking 
+				
+				//check for right side/subtree
+				if (treeContent.nodes[nodeIndex].nodeRightChild==null) {//no right subtree
+					//recursion/next iteration
+					//go up to ancestor
+					printSubTree(
+						treeContent.nodes[nodeIndex].nodeParent,
+						nodeIndex
 					);
-				}//if /* end */
-				else {
-					keys=keys+
-					'node index['+nodeIndex+
-					']='+treeContent.nodes[nodeIndex].keyValue+
-					':parent index['+treeContent.nodes[nodeIndex].nodeParent+
-					'];';										
-					return keys;//not necessary 
-				}//else /* end */
-				
-			}//function /* end */ printRoot(nodeIndex)
-			
-			function searchRight(nodeIndex) {
-				iterationCounter=iterationCounter+1;//by fact of invoking 
-				
-			}
+				}
+				else if (treeContent.nodes[nodeIndex].nodeRightChild!==null) {//go to the right subtree
+					//recursion/next iteration
+					//go to the right subtree
+					printSubTree(
+						treeContent.nodes[nodeIndex].nodeRightChild,
+						nodeIndex
+					);
+				}					
+			}//function /* end */ checkRight(nodeIndex)
 			
 			function printNodeKey(nodeIndex) {
 				if (
@@ -403,7 +368,7 @@ var balancedBinaryTree= (function () {
 					']='+treeContent.nodes[nodeIndex].keyValue+
 					':parent index['+treeContent.nodes[nodeIndex].nodeParent+
 					'];';
-					console.log('keys:'+keys);					
+					//console.log('keys:'+keys);					
 					//return keys;//not necessary 
 				}				
 			}//function /* end */ printNodeKey(nodeIndex)
@@ -415,12 +380,7 @@ var balancedBinaryTree= (function () {
 				// ...
 				// 79294 index==parent index=self go Left index==Lleaf Print index=self go up
 				// 60660 index==parent go Left L=null Print go Right R=null index=self go up
-			
-				/* 
-				subTreeStatus.leftNodeIndex='?';
-				subTreeStatus.rightNodeIndex='?'; 
-				*/
-				
+							
 				iterationCounter=iterationCounter+1;
 				printSubTreeCounter=printSubTreeCounter+1;
 				//anti/prevent endless loop
@@ -458,7 +418,8 @@ var balancedBinaryTree= (function () {
 						printNodeKey(nodeIndex);
 						
 						//check for right side/subtree
-						if (treeContent.nodes[nodeIndex].nodeRightChild==null) {//no right subtree
+						checkRight(nodeIndex);
+						/* if (treeContent.nodes[nodeIndex].nodeRightChild==null) {//no right subtree
 							//recursion/next iteration
 							//go up to ancestor
 							printSubTree(
@@ -473,7 +434,7 @@ var balancedBinaryTree= (function () {
 								treeContent.nodes[nodeIndex].nodeRightChild,
 								nodeIndex
 							);
-						}												
+						}		 */										
 					}//if /* end */ (treeContent.nodes[nodeIndex].nodeLeftChild==null)
 					else if (treeContent.nodes[nodeIndex].nodeLeftChild!==null){
 						//recursion/next iteration 
@@ -490,7 +451,8 @@ var balancedBinaryTree= (function () {
 						printNodeKey(nodeIndex);
 
 						//check for right side/subtree
-						if (treeContent.nodes[nodeIndex].nodeRightChild==null) {//no right subtree
+						checkRight(nodeIndex);
+						/* if (treeContent.nodes[nodeIndex].nodeRightChild==null) {//no right subtree
 							//recursion/next iteration
 							//go up to ancestor
 							printSubTree(
@@ -505,7 +467,7 @@ var balancedBinaryTree= (function () {
 								treeContent.nodes[nodeIndex].nodeRightChild,
 								nodeIndex
 							);
-						}
+						} */
 						
 				}//else if /* end */ (operationIndex==treeContent.nodes[nodeIndex].nodeLeftChild)
 				else if (operationIndex==treeContent.nodes[nodeIndex].nodeRightChild) {//ascending from right subtree
@@ -524,7 +486,7 @@ var balancedBinaryTree= (function () {
 							nodeIndex
 						);
 					}
-				}
+				}//else if /* end */ (operationIndex==treeContent.nodes[nodeIndex].nodeRightChild)
 			}//function /* end */ printSubTree(nodeIndex) 
 			
 			function checkNodeCase(nodeIndex) {
@@ -600,18 +562,208 @@ var balancedBinaryTree= (function () {
 			
       return keys;
     },//outPutAscending: method /* end */
+    outPutDescending: function() {
+			//print keys in increasing order (in-order traversal)			
+			//for Descending Order. Arranged from largest to smallest 
+			
+			var keys='';//return value //or [] //must be in scope for underlying functions			
+			var printSubTreeCounter=0;
+			var iterationCounter=0;
+												
+			function checkLeft(nodeIndex) {
+				//iterationCounter=iterationCounter+1;//by fact of invoking 				
+				//check for right side/subtree
+				if (treeContent.nodes[nodeIndex].nodeLeftChild==null) {//no left subtree
+					//recursion/next iteration
+					//go up to ancestor
+					printSubTree(
+						treeContent.nodes[nodeIndex].nodeParent,
+						nodeIndex
+					);
+				}
+				else if (treeContent.nodes[nodeIndex].nodeLeftChild!==null) {//go to the left subtree
+					//recursion/next iteration
+					//go to the left subtree
+					printSubTree(
+						treeContent.nodes[nodeIndex].nodeLeftChild,
+						nodeIndex
+					);
+				}					
+			}//function /* end */ checkLeft(nodeIndex)
+			
+			function printNodeKey(nodeIndex) {
+				if (
+					nodeIndex==undefined ||
+					nodeIndex==null
+				) {
+					console.log(
+						'nodeIndex for treeContent.nodes[nodeIndex] is '+
+						nodeIndex
+					);
+				}
+				else {
+					keys=keys+
+					'node index['+nodeIndex+
+					']='+treeContent.nodes[nodeIndex].keyValue+
+					':parent index['+treeContent.nodes[nodeIndex].nodeParent+
+					'];';
+					//console.log('keys:'+keys);					
+					//return keys;//not necessary 
+				}				
+			}//function /* end */ printNodeKey(nodeIndex)
+						
+			function printSubTree(nodeIndex,operationIndex) {							
+				iterationCounter=iterationCounter+1;
+				printSubTreeCounter=printSubTreeCounter+1;
+				//anti/prevent endless loop
+				if (
+					printSubTreeCounter>50||
+					iterationCounter>50
+				) {				
+					console.log('itreation count exceed '+iterationCounter+' or '+printSubTreeCounter);
+					return;//accidentally malfunction - unexpected/unpredicted
+				}
+				console.log('itreation #'+iterationCounter);				
+				//figuring out what way to go (traversal to choose)
+				if (
+					operationIndex==treeContent.nodes[nodeIndex].nodeParent ||
+					operationIndex==nodeIndex
+				) {//from root to subtree				
+					//check for last step/completion 
+					if (
+						treeContent.nodes[nodeIndex].nodeParent==null && 
+						keys!==''
+					) {
+						return keys;//done sorting
+					}
+					else if (treeContent.nodes[nodeIndex].nodeParent!==null) {
+					}						
+					//:Right subTree -- not search yet
+					if (treeContent.nodes[nodeIndex].nodeRightChild==null) {
+						//right side search -- done						
+						//print key
+						printNodeKey(nodeIndex);						
+						//check for left side/subtree
+						checkLeft(nodeIndex);								
+					}//if /* end */ (treeContent.nodes[nodeIndex].nodeRightChild==null)
+					else if (treeContent.nodes[nodeIndex].nodeRightChild!==null){
+						//recursion/next iteration 
+						//change current root to =treeContent.nodes[nodeIndex].nodeRightChild 
+						//and descent to the right
+						printSubTree(
+							treeContent.nodes[nodeIndex].nodeRightChild,
+							nodeIndex
+						);
+					}//if /* end */ (treeContent.nodes[nodeIndex].nodeRightChild==null)
+				}//if /* end */ (operationIndex==treeContent.nodes[nodeIndex].nodeParent)
+				else if (operationIndex==treeContent.nodes[nodeIndex].nodeRightChild) {//ascending from right subtree
+						//print key
+						printNodeKey(nodeIndex);
+						//check for left side/subtree
+						checkLeft(nodeIndex);						
+				}//else if /* end */ (operationIndex==treeContent.nodes[nodeIndex].nodeLeftChild)
+				else if (operationIndex==treeContent.nodes[nodeIndex].nodeLeftChild) {//ascending from left subtree
+					//check for last step/completion 
+					if (
+						treeContent.nodes[nodeIndex].nodeParent==null && 
+						keys!==''
+					) {
+						return keys;//done sorting
+					}
+					else if (treeContent.nodes[nodeIndex].nodeParent!==null) {
+						//recursion/next iteration
+						//go up to ancestor
+						printSubTree(
+							treeContent.nodes[nodeIndex].nodeParent,
+							nodeIndex
+						);
+					}
+				}//else if /* end */ (operationIndex==treeContent.nodes[nodeIndex].nodeRightChild)
+			}//function /* end */ printSubTree(nodeIndex) 
+			
+			//if (typeof(treeContent.nodes[0])!==undefined) {//.length > 0 
+			
+			if (typeof(treeContent.nodes[0]!== null)) {//.length > 0 
+			
+			
+				printSubTree(0,0);//for/from 'root'				
+			}//if /* end */ (typeof(treeContent.nodes.item(0)!= null)
+			else {
+				keys='empty -- no one node with key found';
+			}//else /* end */			
+      return keys;
+    },//outPutDescending: method /* end */		
     deleteNode: function(removedNode) {
       //changeBy(-1);
     },
     min: function() {
-      return min;
+			//not a property but method
+			/* 
+			min=null;
+			min='Tree is empty. Nothing return.'; 
+			*/
+			var nodeIndex=0;//root //scope?
+			
+			if (typeof(treeContent.nodes[0])!==null) {//.length > 0 
+				while (treeContent.nodes[nodeIndex].nodeLeftChild!==null) {
+					nodeIndex=treeContent.nodes[nodeIndex].nodeLeftChild;
+				}
+				return treeContent.nodes[nodeIndex].keyValue;
+			}
+			else {
+				return 'Tree is empty. Nothing return.';
+			}
+      //return min;
     },
     max: function() {
-      return max;
+      var nodeIndex=0;//root //scope?
+			
+			if (typeof(treeContent.nodes[0])!==null) {//.length > 0 
+				while (treeContent.nodes[nodeIndex].nodeRightChild!==null) {
+					nodeIndex=treeContent.nodes[nodeIndex].nodeRightChild;
+				}
+				return treeContent.nodes[nodeIndex].keyValue;
+			}
+			else {
+				return 'Tree is empty. Nothing return.';
+			}
     },
-    predecessor: function(currentNode) {
-      return predecessor;
-    },
+    predecessor: function(nodeKey) {
+			//predecessor of key 'k'
+				//1)easy case:
+					// if k's left subTree -- non empty,
+					// return=max key in left subtree (when first time turn/descend left)
+				//2)otherwise/else case:
+					// folow parent pointers until 
+					// parent key became less then 'k'
+			var nodeIndex;//=0;//root //scope?
+			var k=balancedBinaryTree.search(nodeKey);//tree node (object)
+			
+			/* if (typeof(treeContent.nodes[0])!==null) {//.length > 0 */ 
+			if (k!==null) {
+				/* if (treeContent.nodes[nodeIndex].nodeLeftChild!==null) {//left subTree -- non empty */
+				if (k.nodeLeftChild!==null) {//left subTree -- non empty
+					/* nodeIndex=treeContent.nodes[nodeIndex].nodeLeftChild; */
+					nodeIndex=k.nodeLeftChild;
+					return treeContent.nodes[nodeIndex].keyValue;
+				}//if /* end */
+				/* else if (treeContent.nodes[nodeIndex].nodeLeftChild==null) { */
+				else if (k.nodeLeftChild==null) {
+					/* while (treeContent.nodes[treeContent.nodes[nodeIndex].nodeParent].keyValue>=currentNode) { */
+					while (treeContent.nodes[k.nodeParent].keyValue>=nodeKey) {
+						/* nodeIndex=treeContent.nodes[nodeIndex].nodeParent; */
+						k=k.nodeParent;
+					}
+					/* return treeContent.nodes[nodeIndex].keyValue; */
+					return k.keyValue;
+				}//else if  /* end */
+				
+			}//if /* end */
+			else {
+				return 'Tree is empty. Nothing return.';
+			}
+      return ;
+    },//predecessor: /* end */
     successor: function(currentNode) {
       return successor;
     },
@@ -633,6 +785,7 @@ var balancedBinaryTree= (function () {
       return select;
     },
     search: function(keyValue) {
+			//return=node with 'keyValue' or null
 		
 			var flagKeyFound=false;
 			var flagEndOfTree=false;//or .rank==1
@@ -643,8 +796,7 @@ var balancedBinaryTree= (function () {
 			var currentNodeIndex;
 			
 			//has any node
-			if (typeof(treeContent.nodes[0])!=='undefined') {
-			
+			if (typeof(treeContent.nodes[0])!=='undefined') {//.length > 0			
 				currentNodeIndex=0;//root
 				
 				var whileCounter=0;
@@ -672,12 +824,12 @@ var balancedBinaryTree= (function () {
 							);
 							flagNotEndOfTree=false;//end of tree
 							flagEndOfTree=true;
-						}
+						}//if /* end */ (treeContent.nodes[currentNodeIndex].nodeLeftChild==null)
 						else {
 							//continue search
 							currentNodeIndex=treeContent.nodes[currentNodeIndex].nodeLeftChild;
 						}
-					}
+					}//else if /* end */ (keyValue<treeContent.nodes[currentNodeIndex].keyValue)
 					else if (keyValue>treeContent.nodes[currentNodeIndex].keyValue){
 						//right leaf/child
 						if (treeContent.nodes[currentNodeIndex].nodeRightChild==null){
@@ -692,19 +844,19 @@ var balancedBinaryTree= (function () {
 							flagNotEndOfTree=false;//end of tree
 							flagEndOfTree=true;
 							
-						}
+						}//if /* end */ (treeContent.nodes[currentNodeIndex].nodeRightChild==null)
 						else {
 							//continue search
 							currentNodeIndex=treeContent.nodes[currentNodeIndex].nodeRightChild;
 						}
-					}
+					}//else if /* end */ (keyValue>treeContent.nodes[currentNodeIndex].keyValue)
 					
 					whileCounter=whileCounter+1;//for/to break never ending loop
 					if (whileCounter==100) {
 						break;//for/to break never ending loop
 					}
 					
-				}
+				}//while /* end */
 				
 				if (flagKeyNotFound==false) {
 				//if (flagKeyFound) {
@@ -717,40 +869,33 @@ var balancedBinaryTree= (function () {
 						currentNodeIndex+']'
 					);
 					
-					return treeContent.nodes[currentNodeIndex].keyValue;
-				}
-				else if (flagNotEndOfTree){
-				
+					return treeContent.nodes[currentNodeIndex];//.keyValue;
+				}//if /* end */ (flagKeyNotFound==false)
+				else if (flagNotEndOfTree){				
 					console.log('search result for key '+keyValue+' is: '+null+' not found');
 					return null;
-				}
-				
-			}
-			else {
-			
+				}//else if /* end */ (flagNotEndOfTree)				
+			}//if /* end */ (typeof(treeContent.nodes[0])!=='undefined')
+			else {			
 				console.log('search result for key '+keyValue+' is: tree empty. No place for search.');
 				return null;
-			}
+			}//else /* end */
 			
     }//search: /* end */
   };   
-})(); 
+})(); //var /* end */ balancedBinaryTree 
 /*----------------------------------------------------------------------------------------------------------*/
 
 //for HASH array, not for binary tree
 function inlineTreeFromArray(treeArray,domNode){
 
-	if (typeof(treeArray)=='undefined'){
-	
-		console.log(treeArray);
-		
+	if (typeof(treeArray)=='undefined'){	
+		console.log(treeArray);		
 		return ;
 	}
 	
-	if (typeof(domNode)==='undefined'){
-	
-		console.log('not defoned domNode for output');
-		
+	if (typeof(domNode)==='undefined'){	
+		console.log('not defoned domNode for output');		
 		return ;
 	}
 	
@@ -759,7 +904,7 @@ function inlineTreeFromArray(treeArray,domNode){
 		return ;
 	} */
 	
-	if (treeArray[0] != null){
+	if (treeArray[0] != null){//.length > 0
 	
 		var i;
 		var rootKeyIndex;
@@ -817,7 +962,7 @@ function inlineTreeFromArray(treeArray,domNode){
 				newSpanTag.appendChild(newTextNode);
 				new_P_Tag.appendChild(newSpanTag);
 				domNode.appendChild(new_P_Tag);
-			}
+			}// if /* end */
 			
 			if (currentLevel%2===0)//even
 			{
@@ -833,7 +978,7 @@ function inlineTreeFromArray(treeArray,domNode){
 					"-webkit-margin-before: 0em;"+
 					"-webkit-margin-after: 0em;"
 				);
-			}
+			}//if /* end */ (currentLevel%2===0)
 			else//odd
 			{
 				//new_P_Tag.style.background-color='#66CCFF';
@@ -852,8 +997,7 @@ function inlineTreeFromArray(treeArray,domNode){
 					' rank:'+treeArray[i].rank
 				);
 			}
-			else
-			{
+			else {
 				newTextNode = document.createTextNode('['+treeArray[i]+']('+i+')');
 			}			
 			
@@ -886,7 +1030,7 @@ function inlineTreeFromArray(treeArray,domNode){
 				newSpanTag.setAttribute("ondrop","drop(event);");//draggable="true"	
 				newSpanTag.setAttribute("ondragover","allowDrop(event);");//draggable="true"	
 
-			}
+			}//if /* end */ (nodesQuantityOnLevel%2===0)
 			else//odd
 			{
 				newSpanTag.setAttribute("style","color: blue;");
@@ -902,11 +1046,10 @@ function inlineTreeFromArray(treeArray,domNode){
 				//newSpanTag.appendChild(newTextNode);
 				new_P_Tag.appendChild(newSpanTag);
 			
-			}
-			
-		}
+			}//else /* end */			
+		}//for /* end */ (i = 0; i < treeArray.length; i++)
 		
-	}
+	}//if /* end */ (treeArray[0] != null)
 	
 	return ;
 }
@@ -1071,7 +1214,93 @@ document.getElementById("btnContentAscending")
 									
 	}
 );
-/* no effect. whats wrong? */
+
+document.getElementById("btnContentDescending")
+.addEventListener(
+	"click", 
+	function(){
+		var outputTbl;
+		var outputTblRow;
+		var ContentAscending=balancedBinaryTree.outPutDescending().split(";");
+		
+		if (document.getElementById("outputHeapArray")) {
+			outputTbl=document.getElementById("outputHeapArray");
+			if (outputTbl.tBodies[0].rows[1]) {
+				outputTblRow=outputTbl.tBodies[0].rows[1];
+				
+				Array.prototype.forEach.call(
+					outputTblRow.cells, 
+					function(
+						el, 
+						i
+					){
+						el.innerHTML=ContentAscending[i];
+					}//function /* end */
+				);
+			}//if /* end */
+		}//if /* end */
+									
+	}//function /* end */
+);
+
+document.getElementById("btnClearRow")
+.addEventListener(
+	"click", 
+	function(){
+		var outputTbl;
+		var outputTblRow;
+		
+		if (document.getElementById("outputHeapArray")) {
+			outputTbl=document.getElementById("outputHeapArray");
+			if (outputTbl.tBodies[0].rows[1]) {
+				outputTblRow=outputTbl.tBodies[0].rows[1];
+				
+				Array.prototype.forEach.call(
+					outputTblRow.cells, 
+					function(
+						el, 
+						i
+					){
+						el.innerHTML='&nbsp;';//'';
+					}//function /* end */
+				);
+			}//if /* end */
+		}//if /* end */
+									
+	}//function /* end */
+);
+
+//btnMinKey
+document.getElementById("btnMinKey")
+.addEventListener(
+	"click", 
+	function(){
+		this.innerHTML='extracted min key is:'+balancedBinaryTree.min();									
+	}//function /* end */
+);
+
+document.getElementById("btnMaxKey")
+.addEventListener(
+	"click", 
+	function(){
+		this.innerHTML='extracted Max key is:'+balancedBinaryTree.max();									
+	}//function /* end */
+);
+
+//btnPredecessor
+document.getElementById("btnPredecessor")
+.addEventListener(
+	"click", 
+	function(){
+		var key;
+		key=9083;
+		key=54044;
+		//key=79294;
+		this.innerHTML='Predecessor of '+key+' key is:'+balancedBinaryTree.predecessor(key);									
+	}//function /* end */
+);
+
+/* no effect. what's wrong? */
 document.addEventListener('DOMContentLoaded', function(){
 	console.log('DOMContentLoaded'+' readyState:'+document.readyState);
 });
