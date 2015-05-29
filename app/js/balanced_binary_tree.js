@@ -46,8 +46,8 @@ form the subtrees below that node. */
 *		2.3	
 * 3. min
 * 4. max
-* 5. predecessor: next biggest or smallest element of the tree ('left turn')
-* 6. successor
+* 5. predecessor: next smallest element of the tree ('left turn')
+* 6. successor: next biggest element of the tree 
 * 7. outPut in sorted order -- print keys in increasing order (in-order traversal)
 *		7.1 let R=root of search tree
 *				with subTree T(left) and T(right)
@@ -73,7 +73,7 @@ closures
 which is also known as 
 the module pattern */
 //constructor
-var balancedBinaryTree= (function () {
+var balancedBinaryTree = (function () {
 
   var treeContent = {
 		nodes:[]
@@ -89,9 +89,53 @@ var balancedBinaryTree= (function () {
 	
   return {
 		treeContent: function() {
+			//method ()
       return treeContent;//for debugging purpose 
     },//treeContent /* end */
+		treeToHeap: function() {
+		/* 
+			level 0 (rootNode):	54044[0]rank=10;(0)
+			level 1:	14108[1]rank=7;(1)	79294[2]rank=2;(2)
+			level 2:	2995[6]rank=2;(3)	29649[3]rank=4;(4)	60660[5]rank=1;(5)	
+			level 3:		9083[9]rank=1;(6)	25260[4]rank=1;(7)	53777[7]rank=2;(8)				
+			level 4:							49689[8]rank=1;(9)									
+		 */
+			// method
+			var treeHeap=[];
+			/* treeContent.nodes[nodeIndex].nodeParent */
+			var nodeIndex;
+			var iterationCounter=0;
+			nodeIndex=0;//root
+			//treeHeap.length=treeContent.nodes.length;
+			//for () {}
+			
+			//for recursive use
+			function fillHeap(nodeIndex) {
+				if (iterationCounter>50) {
+					console.log('iterationCounter exceed '+iterationCounter);
+					return;
+				}
+				iterationCounter=iterationCounter+1;
+				
+				treeHeap.length=treeHeap.length+1;//add one new element of array
+				//assign value to last element
+				treeHeap[treeHeap.length-1]=treeContent.nodes[nodeIndex].keyValue;
+				//left side first
+				if (treeContent.nodes[nodeIndex].nodeLeftChild) {
+					/* nodeIndex=treeContent.nodes[nodeIndex].nodeRightChild; */
+					fillHeap(treeContent.nodes[nodeIndex].nodeLeftChild);
+				}
+				if (treeContent.nodes[nodeIndex].nodeRightChild) {
+					//nodeIndex=treeContent.nodes[nodeIndex].nodeRightChild;
+					fillHeap(treeContent.nodes[nodeIndex].nodeRightChild);
+				}
+			}//function /* end */ fillHeap()
+			
+			fillHeap(nodeIndex);
+      return treeHeap;//for debugging purpose 
+    },//treeToHeap /* end */
 		treeToHash: function() {
+			// method
 			var treeHash=[];
 			treeHash.length=treeContent.nodes.length;
 			//for () {}
@@ -106,35 +150,36 @@ var balancedBinaryTree= (function () {
 					//treeHash[i]=el.keyValue;
 				}
 			);
-      return treeHash;//for debugging purpose 
+      return treeToHash;//for debugging purpose 
     },//treeToHash /* end */
 		nodeParent: function() {
+			// property
       return nodeParent;
     },
 		nodeLeftChild: function() {
+			//property
       return nodeLeftChild;
     },
 		nodeRightChild: function() {
+			//property
       return nodeRightChild;
     },
 		treeHeight: function() {
       return treeHeight;
     },
     insertNode: function (newNode) {
+			//method
+			var parenNodeIndex,//may accidentally be changed inside some function 
+					parentNode,//name conflict ?
+					currentNodeIndex = 0,//for root/start
 			
-			var parenNodeIndex;//may accidentally be changed inside some function 
-			var parentNode;//name conflict ?
-			var currentNodeIndex=0;//for root/start
+					rankIncrementCounter = 0;
 			
-			var rankIncrementCounter=0;
-			
-			function rankIncrement(nodeIndex){
-				
+			function rankIncrement(nodeIndex){				
 				var rankedNode;//name conflict ? Scope ?
 				
 				//must not exceed array length
-				if (rankIncrementCounter>100){
-				
+				if (rankIncrementCounter>100){				
 					console.log('Iteration count for rank increment exceed 100');
 				}
 			
@@ -145,20 +190,18 @@ var balancedBinaryTree= (function () {
 					//last step -- root (climbed to topmost node)
 					rankedNode.rank=rankedNode.rank+1;
 				}
-				else if (nodeIndex>0){
-				
+				else if (nodeIndex>0){				
 					rankedNode.rank=rankedNode.rank+1;
 					nodeIndex=rankedNode.nodeParent;
 					
 					//recursion
 					//careful because may never end
-					rankIncrement(nodeIndex);
-					
+					rankIncrement(nodeIndex);					
 				}
 			}//rankIncrement /* end */
 			
 			//check for first node existence/presence 
-      if (typeof(treeContent.nodes[0])==='undefined'){
+      if (typeof(treeContent.nodes[0])==='undefined'){//.length > 0
 				//simple case
 				//first/root node 
 								
@@ -178,7 +221,7 @@ var balancedBinaryTree= (function () {
 				treeContent.nodes[currentNodeIndex].rank
 				); */
 				//console.log('treeContent.nodes.length:'+treeContent.nodes.length);
-			}
+			}//if /* end */ (typeof(treeContent.nodes[0])==='undefined')
 			else
 			{
 				//must preserve search tree property -- 
@@ -243,7 +286,7 @@ var balancedBinaryTree= (function () {
 							
 							break;//node added so exit 'while' loop
 						
-						}
+						}//if /* end */ (parentNode.nodeLeftChild==null)
 						else {
 							//search for next place to add new node
 							currentNodeIndex=parentNode.nodeLeftChild;
@@ -252,7 +295,7 @@ var balancedBinaryTree= (function () {
 							//continue ;
 						}
 						
-					}//where newNode is a key value
+					}//if /* end */ (parentNode.keyValue>=newNode) //where 'newNode' is a key value
 					else if (parentNode.keyValue<newNode){
 						//newNode greater then 'k'
 					
@@ -294,7 +337,7 @@ var balancedBinaryTree= (function () {
 							
 							break;//node added so exit 'while' loop
 						
-						}
+						}//if /* end */ (parentNode.nodeRightChild==null)
 						else { //if (parentNode.nodeRightChild!==null) {
 							//search for next place to add new node
 							currentNodeIndex=parentNode.nodeRightChild;
@@ -303,7 +346,7 @@ var balancedBinaryTree= (function () {
 							//continue ;
 						}
 						
-					}
+					}//else if /* end */ (parentNode.keyValue<newNode)
 					
 					whileCounter=whileCounter+1;
 					if (whileCounter==100){
@@ -711,7 +754,7 @@ var balancedBinaryTree= (function () {
 				return treeContent.nodes[nodeIndex].keyValue;
 			}
 			else {
-				return 'Tree is empty. Nothing return.';
+				return 'Tree is empty.' + "Nothing return.";
 			}
       //return min;
     },
@@ -787,13 +830,13 @@ var balancedBinaryTree= (function () {
     search: function(keyValue) {
 			//return=node with 'keyValue' or null
 		
-			var flagKeyFound=false;
-			var flagEndOfTree=false;//or .rank==1
+			var flagKeyFound=false,
+					flagEndOfTree=false,//or .rank==1
 			
-			var flagKeyNotFound=true;
-			var flagNotEndOfTree=true;//or .rank>1
+					flagKeyNotFound=true,
+					flagNotEndOfTree=true,//or .rank>1
 			
-			var currentNodeIndex;
+					currentNodeIndex;
 			
 			//has any node
 			if (typeof(treeContent.nodes[0])!=='undefined') {//.length > 0			
@@ -847,32 +890,34 @@ var balancedBinaryTree= (function () {
 						}//if /* end */ (treeContent.nodes[currentNodeIndex].nodeRightChild==null)
 						else {
 							//continue search
-							currentNodeIndex=treeContent.nodes[currentNodeIndex].nodeRightChild;
+							currentNodeIndex = treeContent
+																	.nodes[currentNodeIndex]
+																		.nodeRightChild;
 						}
 					}//else if /* end */ (keyValue>treeContent.nodes[currentNodeIndex].keyValue)
 					
 					whileCounter=whileCounter+1;//for/to break never ending loop
-					if (whileCounter==100) {
+					if (whileCounter == 100) {
 						break;//for/to break never ending loop
 					}
 					
 				}//while /* end */
 				
-				if (flagKeyNotFound==false) {
+				if (flagKeyNotFound == false) {
 				//if (flagKeyFound) {
 					console.log(
-						'search result for key '+
+						'search result for key ' +
 						keyValue+
-						' is: found in node ('+
-						treeContent.nodes[currentNodeIndex].keyValue+
-						') with index ['+
-						currentNodeIndex+']'
+						' is: found in node (' +
+						treeContent.nodes[currentNodeIndex].keyValue +
+						') with index [' +
+						currentNodeIndex + ']'
 					);
 					
 					return treeContent.nodes[currentNodeIndex];//.keyValue;
 				}//if /* end */ (flagKeyNotFound==false)
 				else if (flagNotEndOfTree){				
-					console.log('search result for key '+keyValue+' is: '+null+' not found');
+					console.log('search result for key ' + keyValue + ' is: ' + null + ' not found');
 					return null;
 				}//else if /* end */ (flagNotEndOfTree)				
 			}//if /* end */ (typeof(treeContent.nodes[0])!=='undefined')
@@ -887,14 +932,14 @@ var balancedBinaryTree= (function () {
 /*----------------------------------------------------------------------------------------------------------*/
 
 //for HASH array, not for binary tree
-function inlineTreeFromArray(treeArray,domNode){
+function inlineTreeFromArray(treeArray, domNode){
 
-	if (typeof(treeArray)=='undefined'){	
+	if (typeof(treeArray) == 'undefined'){	
 		console.log(treeArray);		
 		return ;
 	}
 	
-	if (typeof(domNode)==='undefined'){	
+	if (typeof(domNode) === 'undefined'){	
 		console.log('not defoned domNode for output');		
 		return ;
 	}
@@ -906,66 +951,69 @@ function inlineTreeFromArray(treeArray,domNode){
 	
 	if (treeArray[0] != null){//.length > 0
 	
-		var i;
-		var rootKeyIndex;
-		var leftLeafIndex;
-		var rightLeafIndex;
+		var i,
+				rootKeyIndex,
+				leftLeafIndex,
+				rightLeafIndex,
 		
-		var treeHeight;//startingY+nodeHeight+edgeHeight 
-		var nodeHeight=1;//leftLeaf._nodeHeight
-		var edgeHeight=1;
+				treeHeight,//startingY+nodeHeight+edgeHeight 
+				nodeHeight=1,//leftLeaf._nodeHeight
+				edgeHeight=1,
 		
 		//Math.pow(2, n)+' maximum # of elements on level n
-		var currentLevel;
-		var nodeStartPosOnLevelX;
-		var nodeCurrentPosOnLevelX;
-		var nodesQuantityOnLevel; //quantity	
+				currentLevel,
+				nodeStartPosOnLevelX,
+				nodeCurrentPosOnLevelX,
+				nodesQuantityOnLevel, //quantity	
 
-		var new_P_Tag;
-		var newSpanTag;
-		var newTextNode;
+				new_P_Tag,
+				newSpanTag,
+				newTextNode;
 		
-		rootKeyIndex=0;
+		rootKeyIndex = 0;
 				
-		treeHeight=0;//newPathStart.pathStartY;//30;//rootNode._nodeHeight
-		nodeCurrentPosOnLevelX=nodeStartPosOnLevelX;
+		treeHeight = 0;//newPathStart.pathStartY;//30;//rootNode._nodeHeight
+		nodeCurrentPosOnLevelX = nodeStartPosOnLevelX;
 		
 		//traverse down - from root to leafs 
-		currentLevel=-1;	
-		nodesQuantityOnLevel=0;//Math.pow(2, currentLevel);
+		currentLevel = - 1;	
+		nodesQuantityOnLevel = 0;//Math.pow(2, currentLevel);
 		
 		for (i = 0; i < treeArray.length; i++){
 		
 			//<p id='rootNode'>level 0 (rootNode):<span>54044</span></p>
 			//nodesQuantityOnLevel was incremented on previous turn/loop iteration
 			if (
-				(nodesQuantityOnLevel>=Math.pow(2, currentLevel)) ||
-				(i==0)
+				(nodesQuantityOnLevel >= Math.pow(2, currentLevel)) ||
+				(i == 0)
 			){
 		
-				currentLevel=currentLevel+1;
-				treeHeight=treeHeight+nodeHeight+edgeHeight;
-				nodesQuantityOnLevel=0;
+				currentLevel = currentLevel + 1;//* ++
+				treeHeight = treeHeight + nodeHeight + edgeHeight;
+				nodesQuantityOnLevel = 0;
 				
 				new_P_Tag = document.createElement("p");//new string/level on tree
-				new_P_Tag.setAttribute(
-					"style",
-					"text-align: center;line-height: 100%;-webkit-margin-before: 0em;-webkit-margin-after: 0em;"
-				);
+				new_P_Tag
+					.setAttribute(
+						"style",
+						"text-align: center;" + 
+						"line-height: 100%;" + 
+						"-webkit-margin-before: 0em;" +
+						"-webkit-margin-after: 0em;"
+					);
 				newTextNode = document.createTextNode('Level: '+currentLevel+'::');
-				newSpanTag= document.createElement("span");//string/p content
-				newSpanTag.setAttribute(
-					"style",
-					"position: absolute;"+
-					"left: 10px;"
-				);
+				newSpanTag = document.createElement("span");//string/p content
+				newSpanTag
+					.setAttribute(
+						"style",
+						"position: absolute;"+
+						"left: 10px;");
 				newSpanTag.appendChild(newTextNode);
 				new_P_Tag.appendChild(newSpanTag);
 				domNode.appendChild(new_P_Tag);
 			}// if /* end */
 			
-			if (currentLevel%2===0)//even
-			{
+			if (currentLevel % 2 === 0) {//* even
 				/* To change the style of an HTML element, use this syntax:
 				document.getElementById(id).style.property=new style */
 				//new_P_Tag.style.background-color='#66FF33';
@@ -979,18 +1027,16 @@ function inlineTreeFromArray(treeArray,domNode){
 					"-webkit-margin-after: 0em;"
 				);
 			}//if /* end */ (currentLevel%2===0)
-			else//odd
-			{
+			else {//* odd
 				//new_P_Tag.style.background-color='#66CCFF';
 			
 			}
 			
-			nodesQuantityOnLevel=nodesQuantityOnLevel+1;//add current/new array element
+			nodesQuantityOnLevel = nodesQuantityOnLevel+1;//* add current/new array element
 			
-			newSpanTag= document.createElement("span");//string/p content
+			newSpanTag = document.createElement("span");//* string/p content
 			
-			if (treeArray[i].keyValue) 
-			{
+			if (treeArray[i].keyValue) {
 				newTextNode = document.createTextNode(
 					'['+treeArray[i].keyValue+']('+i+')'+
 					'Parent index:'+treeArray[i].nodeParent+
@@ -1008,8 +1054,7 @@ function inlineTreeFromArray(treeArray,domNode){
 				//domNode.appendChild(new_P_Tag);
 			}
 
-			if (nodesQuantityOnLevel%2===0)//even
-			{
+			if (nodesQuantityOnLevel%2 === 0) {//* even
 				//document.getElementById("myList").insertBefore(newItem,existingItem);
 				/*The insertBefore() method 
 				inserts a node as a child, right before an existing child, which you specify.
@@ -1056,7 +1101,7 @@ function inlineTreeFromArray(treeArray,domNode){
 /*----------------------------------------------------------------------------------------------------------*/
 
 //id='bTreeStrings'
-var domNode=document.getElementById('bTreeStrings');
+var domNode = document.getElementById('bTreeStrings');
 /* console.log('domNode is: '+domNode); */
 //inlineTreeFromArray(sampleArray,domNode);
 
@@ -1079,20 +1124,20 @@ is executed after the current effect is finished.
 	//if needed to determine exact element to clear -- pass it to function as parameter
 function clearInlineTree(){
 	
-	var tagsP_forRemoval;
-	var i;
+	var tagsP_forRemoval,
+			i;
 	//document.normalize();//Removes empty Text nodes, and joins adjacent nodes
 	//element.normalize();
 	//domNode.normalize();
 	
 	//console.log('domNode.childNodes.length was:'+domNode.childNodes.length);
-	if (typeof(domNode)==='undefined') {
+	if (typeof(domNode) === 'undefined') {
 		console.log('no target element for clear, domNode is -- undefined');
 		
 		return ;
 	}
 	
-	if (domNode===null) {
+	if (domNode === null) {
 		console.log('no target element for clear, domNode is -- null');
 		
 		return ;
@@ -1100,14 +1145,14 @@ function clearInlineTree(){
 	
 	//in Opera: Uncaught exception: TypeError: Cannot convert 'domNode' to object
 	//reason/because -- DOM not loaded yet -- body tag is empty
-	tagsP_forRemoval=domNode.getElementsByTagName("P");//returns a collection of all elements in the document with the specified tagname, as a NodeList object.
+	tagsP_forRemoval = domNode.getElementsByTagName("P");//returns a collection of all elements in the document with the specified tagname, as a NodeList object.
 	//The NodeList object represents a collection of nodes. 
 	//The nodes can be accessed by index numbers. 
 	//The index starts at 0.
 	
 	//console.log('tagsP_forRemoval.length was:'+tagsP_forRemoval.length);
 	
-	while (typeof(tagsP_forRemoval[0])!=='undefined') {
+	while (typeof(tagsP_forRemoval[0]) !== 'undefined') {
     //x[i].style.backgroundColor = "red";
 		domNode.removeChild(tagsP_forRemoval[0]);
 		
@@ -1187,88 +1232,91 @@ document.getElementById("printTree")
 );
 
 //btnContentAscending
-document.getElementById("btnContentAscending")
-.addEventListener(
-	"click", 
-	function(){
-		var outputTbl;
-		var outputTblRow;
-		var ContentAscending=balancedBinaryTree.outPutAscending().split(";");
-		
-		if (document.getElementById("outputHeapArray")) {
-			outputTbl=document.getElementById("outputHeapArray");
-			if (outputTbl.tBodies[0].rows[1]) {
-				outputTblRow=outputTbl.tBodies[0].rows[1];
+document
+	.getElementById("btnContentAscending")
+		.addEventListener(
+			"click", 
+			function(){
+				var outputTbl,
+						outputTblRow,
+						ContentAscending = balancedBinaryTree.outPutAscending().split(";");
 				
-				Array.prototype.forEach.call(
-					outputTblRow.cells, 
-					function(
-						el, 
-						i
-					){
-						el.innerHTML=ContentAscending[i];
+				if (document.getElementById("outputHeapArray")) {
+					outputTbl = document.getElementById("outputHeapArray");
+					if (outputTbl.tBodies[0].rows[1]) {
+						outputTblRow = outputTbl.tBodies[0].rows[1];
+						
+						Array.prototype.forEach.call(
+							outputTblRow.cells, 
+							function(
+								el, 
+								i
+							){
+								el.innerHTML = ContentAscending[i];
+							}
+						);
 					}
-				);
+				}
+											
 			}
-		}
-									
-	}
-);
+		);
 
-document.getElementById("btnContentDescending")
-.addEventListener(
-	"click", 
-	function(){
-		var outputTbl;
-		var outputTblRow;
-		var ContentAscending=balancedBinaryTree.outPutDescending().split(";");
-		
-		if (document.getElementById("outputHeapArray")) {
-			outputTbl=document.getElementById("outputHeapArray");
-			if (outputTbl.tBodies[0].rows[1]) {
-				outputTblRow=outputTbl.tBodies[0].rows[1];
+document
+	.getElementById("btnContentDescending")
+		.addEventListener(
+			"click", 
+			function(){
+				var outputTbl,
+						outputTblRow,
+						ContentAscending = balancedBinaryTree.outPutDescending().split(";");
 				
-				Array.prototype.forEach.call(
-					outputTblRow.cells, 
-					function(
-						el, 
-						i
-					){
-						el.innerHTML=ContentAscending[i];
-					}//function /* end */
-				);
-			}//if /* end */
-		}//if /* end */
-									
-	}//function /* end */
-);
+				if (document.getElementById("outputHeapArray")) {
+					outputTbl = document.getElementById("outputHeapArray");
+					if (outputTbl.tBodies[0].rows[1]) {
+						outputTblRow = outputTbl.tBodies[0].rows[1];
+						
+						Array.prototype.forEach.call(
+							outputTblRow.cells, 
+							function(
+								el, 
+								i
+							){
+								el.innerHTML = ContentAscending[i];
+							}//function /* end */
+						);
+					}//if /* end */
+				}//if /* end */
+											
+			}//function /* end */
+		);
 
-document.getElementById("btnClearRow")
-.addEventListener(
-	"click", 
-	function(){
-		var outputTbl;
-		var outputTblRow;
-		
-		if (document.getElementById("outputHeapArray")) {
-			outputTbl=document.getElementById("outputHeapArray");
-			if (outputTbl.tBodies[0].rows[1]) {
-				outputTblRow=outputTbl.tBodies[0].rows[1];
+document
+	.getElementById("btnClearRow")
+		.addEventListener(
+			"click", 
+			function(){
+				var outputTbl,
+						outputTblRow;
 				
-				Array.prototype.forEach.call(
-					outputTblRow.cells, 
-					function(
-						el, 
-						i
-					){
-						el.innerHTML='&nbsp;';//'';
-					}//function /* end */
-				);
-			}//if /* end */
-		}//if /* end */
-									
-	}//function /* end */
-);
+				if (document.getElementById("outputHeapArray")) {
+					outputTbl = document.getElementById("outputHeapArray");
+					if (outputTbl.tBodies[0].rows[1]) {
+						outputTblRow = outputTbl.tBodies[0].rows[1];
+						
+						Array.prototype.forEach.call(
+							outputTblRow.cells, 
+							function(
+								el, 
+								i
+							){
+								el.innerHTML = '&nbsp;';//'';
+							}//function /* end */
+						);
+					}//if /* end */
+				}//if /* end */
+											
+			}//function /* end */
+		);
 
 //btnMinKey
 document.getElementById("btnMinKey")
@@ -1301,9 +1349,14 @@ document.getElementById("btnPredecessor")
 );
 
 /* no effect. what's wrong? */
-document.addEventListener('DOMContentLoaded', function(){
-	console.log('DOMContentLoaded'+' readyState:'+document.readyState);
-});
+// for IE9+ only ?
+document
+	.addEventListener(
+		'DOMContentLoaded', 
+		function(){
+			console.log('DOMContentLoaded' + ' readyState:' + document.readyState);
+		}
+);
 /*----------------------------------------------------------------------------------------------------------*/
 //balancedBinaryTree
 /* 
@@ -1314,11 +1367,12 @@ balancedBinaryTree.insertNode(1);
 balancedBinaryTree.insertNode(3); 
 */
 
-var sampleArray=[54044,14108,79294,29649,25260,60660,2995,53777,49689,9083];
-var i;//check for double/repeated declaration  
+var sampleArray = [54044,14108,79294,29649,25260,60660,2995,53777,49689,9083];
+//var i;//check for double/repeated declaration  
 
-for (i=0;sampleArray.length>i;i=i+1){
-	balancedBinaryTree.insertNode(sampleArray[i]);
+for (var i = 0 ; sampleArray.length > i ; i = i + 1){
+	balancedBinaryTree
+		.insertNode(sampleArray[i]);
 }
 
 //console.log('treeContent in Ascending order:'+balancedBinaryTree.outPutAscending());//out of scope?
@@ -1326,6 +1380,98 @@ for (i=0;sampleArray.length>i;i=i+1){
 //console.log('treeRank or root node rank is:'+balancedBinaryTree.treeRank());
 
 var findKey;
-findKey=2995;
+		findKey=2995;
 //console.log('find key '+findKey+' in tree result: '+balancedBinaryTree.search(findKey));
+console.log('treeToHeap is:' + balancedBinaryTree.treeToHeap());
+
+var allRanks='';
+// Array.prototype.forEach.call(
+	// balancedBinaryTree.treeContent().nodes, 
+	// function(
+		// el, 
+		// i
+	// ){
+		// allRanks=allRanks+el.keyValue+'['+i+']'+'rank='+el.rank+';';
+	// }//function /* end */
+// );
+
+//alternative syntax:
+/* 
+arr.map(callback[, thisArg])
+Parameters:
+	callback
+	Function that produces an element of the new Array, taking three arguments:
+		currentValue
+			The current element being processed in the array.
+		index
+			The index of the current element being processed in the array.
+		array
+			The array map was called upon.
+	thisArg
+		Value to use as this when executing callback.
+ */
+balancedBinaryTree
+	.treeContent()
+		.nodes.map(
+			function(
+				el, 
+				i
+			){
+				allRanks = allRanks + el.keyValue + '[' + i + ']' + 'rank=' + el.rank + ';';
+			}//function /* end */
+);
+console.log('allRanks is:' + allRanks);
 /*----------------------------------------------------------------------------------------------------------*/
+
+//Frame/Object Events
+//equivalent to <body onload="SomeJavaScriptCode">
+/*
+onload is Supported by the Following HTML Tags:
+<body>, <frame>, <frameset>, <iframe>, <img>, <input type="image">, <link>, <script>, <style>
+*/ 
+//the code doesn't run until all images are finished downloading, including banner ads. 
+window.onload = function() {
+
+	console.log('window.onload event');
+    //alert( "welcome" );
+ 
+}
+
+// jQuery alternative:
+/*$( document ).ready(function() {
+ 
+    // Your code here.
+ 
+});*/
+
+document.body.onload = function() {
+
+	console.log(
+		'document.body event' + ' document.readyState:' + document.readyState
+	);// works in Chrome 
+	/*
+  1.  uninitialized - Has not started loading yet
+	2. loading - Is loading
+	3. interactive - Has loaded enough and the user can interact with it
+	4. complete - Fully loaded
+	*/
+ 
+};
+
+//Note: 
+//Do not use the "on" prefix. For example, use "click" instead of "onclick".
+document.addEventListener(
+	'load', 
+	function(){
+		console.log('document on load EventListener'+' readyState:'+document.readyState);
+	}
+);
+
+// works in Chrome 
+// shadowing previous event 'document.body.onload'
+window.addEventListener(
+	'load', 
+	function(){
+		console.log('window on load EventListener'+' document.readyState:'+document.readyState);
+	}
+);
